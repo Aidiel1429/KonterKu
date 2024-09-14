@@ -106,7 +106,7 @@ const ChartPenjualan = () => {
         }`,
         font: {
           size: 18,
-          weight: "bold",
+          weight: "bold" as "bold", // Tipe yang benar
         },
         padding: {
           bottom: 20,
@@ -139,8 +139,11 @@ const ChartPenjualan = () => {
           font: {
             size: 14,
           },
-          callback: function (value: number) {
-            return `Rp ${value.toLocaleString()}`;
+          callback: function (value: number | string) {
+            if (typeof value === "number") {
+              return `Rp ${value.toLocaleString()}`;
+            }
+            return `Rp ${parseFloat(value).toLocaleString()}`;
           },
         },
       },
