@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Barang {
+  id              Int               @id @default(autoincrement())
+  kodeBarang      String            @unique
+  nama            String
+  stok            Int
+  merek           String
+  hargaModal      Float
+  hargaJual       Float
+  kategoriId      Int
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  Kategori        Kategori          @relation(fields: [kategoriId], references: [id], onDelete: Cascade)
+  PenjualanBarang PenjualanBarang[]
+}
+
+model JasaServis {
+  id         Int      @id @default(autoincrement())
+  kodeServis String
+  namaBarang String
+  nama       String
+  harga      Int
+  tanggal    DateTime
+  deskripsi  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+}
+
+model JenisService {
+  id        Int       @id @default(autoincrement())
+  nama      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  Service   Service[]
+}
+
+model Kategori {
+  id        Int      @id @default(autoincrement())
+  nama      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Barang    Barang[]
+}
+
+model PenjualanBarang {
+  id         Int      @id @default(autoincrement())
+  kodeBarang String
+  namaBarang String
+  qty        Int
+  grandTotal Int
+  subTotal   Int
+  tanggal    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  Barang     Barang?  @relation(fields: [barangId], references: [id])
+  barangId   Int?
+}
+
+model Service {
+  id           Int          @id @default(autoincrement())
+  kodeServis   String
+  nama         String
+  nope         String
+  namaBarang   String
+  nomorSeri    String
+  deskripsi    String?
+  harga        Int?
+  tanggal      DateTime
+  jenisId      Int
+  status       String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime
+  JenisService JenisService @relation(fields: [jenisId], references: [id], onDelete: Cascade)
+}
