@@ -140,7 +140,7 @@ const Stok = () => {
       <div className="p-4 m-5 text-base bg-white shadow-md rounded-md text-slate-700 lg:text-xl">
         <div className="lg:flex justify-between items-center">
           <TambahStok loadStok={loadStok} />
-          <div className="my-4 w-[400px]">
+          <div className="my-4 lg:w-[400px]">
             <input
               type="text"
               className="input input-bordered w-full"

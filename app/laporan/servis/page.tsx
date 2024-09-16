@@ -111,7 +111,7 @@ const Penjualan = () => {
       <div className="lg:flex m-5 text-base gap-10 text-slate-700 lg:text-xl">
         <div className="bg-white w-full rounded-md shadow-md p-5 lg:h-40 text-center flex flex-col items-center justify-center mb-5">
           <p className="lg:text-xl font-semibold text-slate-500">
-            Total Penjualan
+            Total Servis
           </p>
           <br />
           <p className="text-xl lg:text-3xl font-bold">
@@ -132,7 +132,7 @@ const Penjualan = () => {
       </div>
       <div className="p-4 m-5 text-base bg-white shadow-md rounded-md text-slate-700 lg:text-xl">
         <div className="flex justify-end items-center">
-          <div className="my-4 lg:w-[400px]">
+          <div className="my-4 w-full lg:w-[400px]">
             <input
               type="text"
               className="input input-bordered w-full"

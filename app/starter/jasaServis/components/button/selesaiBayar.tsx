@@ -173,11 +173,11 @@ const SelesaiBayar = ({
                   <thead>
                     <tr>
                       <th>Kode Servis</th>
+                      <th>Harga</th>
                       <th>Nama Barang</th>
                       <th>Nama Pelanggan</th>
                       <th>Tanggal Servis</th>
                       <th>Deskripsi</th>
-                      <th>Harga</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -188,6 +188,15 @@ const SelesaiBayar = ({
                           className="border-none outline-none"
                           readOnly
                           value={kodeServis}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          className="border-b outline-none p-2"
+                          placeholder="Masukkan Harga"
+                          value={harga}
+                          onChange={handleHargaChange}
                         />
                       </td>
                       <td>
@@ -220,15 +229,6 @@ const SelesaiBayar = ({
                           className="border-none outline-none"
                           readOnly
                           value={deskripsi}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          className="border-b outline-none p-2"
-                          placeholder="Masukkan Harga"
-                          value={harga}
-                          onChange={handleHargaChange}
                         />
                       </td>
                     </tr>

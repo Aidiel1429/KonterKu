@@ -165,12 +165,6 @@ const Header = () => {
                 <h1>Penjualan</h1>
               </div>
             </Link>
-          </div>
-          <div
-            className={`transition-all duration-300 ease-in-out overflow-hidden text-sm p-1 ${
-              openLaporan ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
-            } bg-blue-500 rounded-md text-white mt-1`}
-          >
             <Link href={"/laporan/servis"}>
               <div
                 className="p-2 hover:bg-white/10 rounded-md cursor-pointer transition-all"
@@ -180,6 +174,11 @@ const Header = () => {
               </div>
             </Link>
           </div>
+          {/* <div
+            className={`transition-all duration-300 ease-in-out overflow-hidden text-sm p-1 ${
+              openLaporan ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+            } bg-blue-500 rounded-md text-white mt-1`}
+          ></div> */}
         </div>
       </div>
     </div>
