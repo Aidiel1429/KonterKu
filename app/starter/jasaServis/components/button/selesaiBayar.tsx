@@ -339,7 +339,7 @@ const SelesaiBayar = ({
       </dialog>
       <div style={{ display: "none" }}>
         <div ref={componentRef}>
-          <PrintBayar data={dataPrint} formatRupiah={formatCurrency} />
+          <PrintBayar data={dataPrint} />
         </div>
       </div>
       {showAlert && (
