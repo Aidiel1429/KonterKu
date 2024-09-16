@@ -118,7 +118,6 @@ const SelesaiBayar = ({
           kodeServis: ekodeServis,
           namaBarang: enamaBarang,
           nama: enama,
-          tanggal: etanggal,
           deskripsi: edeskripsi,
           harga: String(harga),
           jumlahDibayar: String(jumlahDibayar),
@@ -171,7 +170,6 @@ const SelesaiBayar = ({
   const handleAfterPrint = () => {
     if (componentRef.current) {
       setTimeout(() => {
-        setShowPrintButton(false);
         handlePembayaran();
       }, 1000);
     }

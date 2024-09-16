@@ -33,17 +33,6 @@ const PrintBayar = ({ data }: { data: any }) => {
           </p>
         </div>
       </div>
-      <div className="mt-[48px]">
-        <div className="flex justify-between items-center">
-          <p className="text-[#242424] font-semibold">Tanggal Transaksi</p>
-          <p className="text-[#3A3A3A] font-semibold">
-            {formatTanggal(data.tanggal)}
-          </p>
-        </div>
-      </div>
-      <div>
-        <div className="divider"></div>
-      </div>
       <div>
         <h1 className="font-bold text-[16px] text-[#242424]">Detail Servis</h1>
         <table className="w-full mt-3">

@@ -7,6 +7,7 @@ import TambahKategori from "./components/button/tambah";
 import HapusKategori from "./components/button/hapus";
 import EditKategori from "./components/button/edit";
 import { RiCloseLargeLine } from "react-icons/ri";
+import Skeleton from "@/app/components/skeleton";
 
 const Kategori = () => {
   const [kategori, setKategori] = useState([]);
@@ -94,6 +95,8 @@ const Kategori = () => {
   const handleCloseAlert = () => {
     setShowAlert(false);
   };
+
+  if (loading) return <Skeleton />;
 
   return (
     <>
