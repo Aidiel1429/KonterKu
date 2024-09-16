@@ -1,4 +1,5 @@
 "use client";
+import Skeleton from "@/app/components/skeleton";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
@@ -12,36 +13,26 @@ const Penjualan = () => {
 
   const [loading, setLoading] = useState(true);
 
+  // Fungsi untuk memuat data dan mengatur loading
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setTimeout(() => {
-          setLoading(false);
-        }, 2000);
+        const laporanServis = await axios.get("/api/laporanServis");
+        const hasil = laporanServis.data;
+        setLaporan(hasil);
+        setLoading(false); // Set loading ke false setelah data berhasil diambil
       } catch (error) {
         console.error("Error fetching data:", error);
+        setLoading(false); // Pastikan loading juga dihentikan jika terjadi error
       }
     };
-    fetchData();
-  }, []);
 
-  useEffect(() => {
-    loadServis();
+    fetchData();
   }, []);
 
   useEffect(() => {
     calculateTotalPendapatan();
   }, [laporan]);
-
-  const loadServis = async () => {
-    try {
-      const laporanServis = await axios.get("/api/laporanServis");
-      const hasil = laporanServis.data;
-      setLaporan(hasil);
-    } catch (error) {
-      console.error("Error loading laporan servis:", error);
-    }
-  };
 
   const calculateTotalPendapatan = () => {
     const total = laporan.reduce((sum, item) => sum + (item.harga || 0), 0);
@@ -121,6 +112,7 @@ const Penjualan = () => {
     },
   ];
 
+  // Menampilkan Skeleton saat loading
   if (loading) return <Skeleton />;
 
   return (
