@@ -11,10 +11,8 @@ interface HapusJenisProps {
 
 const HapusJenis = ({ id, loadJenis, setShowAlert }: HapusJenisProps) => {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false); // State untuk mengontrol loading
 
   const handleHapus = async () => {
-    setLoading(true); // Set loading menjadi true
     try {
       const response = await axios.delete(`/api/jenis/${id}`);
       if (response.data.pesan === "sukses") {
@@ -24,8 +22,6 @@ const HapusJenis = ({ id, loadJenis, setShowAlert }: HapusJenisProps) => {
       }
     } catch (error) {
       console.log("Terjadi Kesalahan: ", error);
-    } finally {
-      setLoading(false); // Set loading menjadi false setelah request selesai
     }
   };
 
@@ -50,11 +46,10 @@ const HapusJenis = ({ id, loadJenis, setShowAlert }: HapusJenisProps) => {
               Tutup
             </button>
             <button
-              className={`btn btn-error text-white ${loading ? "loading" : ""}`} // Tambahkan class loading jika dalam proses
+              className={`btn btn-error text-white`} // Tambahkan class loading jika dalam proses
               onClick={handleHapus}
-              disabled={loading} // Disable tombol saat loading
             >
-              {loading ? "Menghapus..." : "Hapus"}
+              Hapus
             </button>
           </div>
         </div>

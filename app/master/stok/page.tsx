@@ -17,6 +17,21 @@ const Stok = () => {
   const [showErorr, setShowErorr] = useState(false);
   const [almostOutOfStock, setAlmostOutOfStock] = useState([]);
 
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setTimeout(() => {
+          setLoading(false);
+        }, 2000);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
   useEffect(() => {
     loadStok();
   }, []);

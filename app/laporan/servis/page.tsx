@@ -10,6 +10,21 @@ const Penjualan = () => {
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [totalPendapatan, setTotalPendapatan] = useState<number>(0);
 
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setTimeout(() => {
+          setLoading(false);
+        }, 2000);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
   useEffect(() => {
     loadServis();
   }, []);
@@ -105,6 +120,8 @@ const Penjualan = () => {
       sortable: true,
     },
   ];
+
+  if (loading) return <Skeleton />;
 
   return (
     <>

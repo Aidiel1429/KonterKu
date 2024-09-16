@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Search from "./components/Search";
 import ReactToPrint from "react-to-print";
 import ComponentToPrint from "./components/ComponentPrint"; // Update path if necessary
+import Skeleton from "@/app/components/skeleton";
 
 const Penjualan = () => {
   const [barangTerpilih, setBarangTerpilih] = useState<any[]>([]);
@@ -17,6 +18,21 @@ const Penjualan = () => {
   const [showPrintButton, setShowPrintButton] = useState(false); // Menampilkan tombol print setelah simpan
 
   const router = useRouter();
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setTimeout(() => {
+          setLoading(false);
+        }, 2000);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Hitung total harga secara otomatis saat barang dipilih atau qty berubah
   useEffect(() => {
@@ -107,6 +123,8 @@ const Penjualan = () => {
       day: "numeric",
     });
   };
+
+  if (loading) return <Skeleton />;
 
   return (
     <>

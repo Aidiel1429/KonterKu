@@ -7,6 +7,7 @@ import Tambah from "./components/button/Tambah";
 import Batal from "./components/button/batal";
 import SelesaiServis from "./components/button/selesaiServis";
 import SelesaiBayar from "./components/button/selesaiBayar";
+import Skeleton from "@/app/components/skeleton";
 
 const Stok = () => {
   const [servis, setServis] = useState([]);
@@ -15,6 +16,21 @@ const Stok = () => {
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [showAlert, setShowAlert] = useState(false);
   const [showErorr, setShowErorr] = useState(false);
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setTimeout(() => {
+          setLoading(false);
+        }, 2000);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     loadServis();
@@ -183,6 +199,8 @@ const Stok = () => {
       ),
     },
   ];
+
+  if (loading) return <Skeleton />;
 
   return (
     <>

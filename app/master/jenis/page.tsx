@@ -6,6 +6,7 @@ import TambahJenis from "./components/button/tambah";
 import HapusJenis from "./components/button/hapus";
 import { RiCloseLargeLine } from "react-icons/ri";
 import EditJenis from "./components/button/edit";
+import Skeleton from "@/app/components/skeleton";
 
 const JenisServis = () => {
   const [jenis, setJenis] = useState([]);
@@ -14,6 +15,21 @@ const JenisServis = () => {
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [showAlert, setShowAlert] = useState(false);
   const [showErorr, setShowErorr] = useState(false);
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setTimeout(() => {
+          setLoading(false);
+        }, 2000);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     loadJenis();
@@ -74,6 +90,8 @@ const JenisServis = () => {
   const handleCloseErorr = () => {
     setShowErorr(false);
   };
+
+  if (loading) return <Skeleton />;
   return (
     <>
       <div className="p-4 m-5 text-base bg-white shadow-md rounded-md text-slate-700 lg:text-xl">

@@ -15,6 +15,21 @@ const Penjualan = () => {
   const [selectAll, setSelectAll] = useState(false); // State untuk "Select All"
   const [showAlert, setShowAlert] = useState(false);
 
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setTimeout(() => {
+          setLoading(false);
+        }, 2000);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
   useEffect(() => {
     loadPenjualan();
   }, []);

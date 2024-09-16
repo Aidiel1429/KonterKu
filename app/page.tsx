@@ -12,6 +12,7 @@ import {
 } from "chart.js";
 import ChartPenjualan from "./components/chart/chartPenjualan";
 import ChartServis from "./components/chart/chartServis";
+import Skeleton from "./components/skeleton";
 
 ChartJS.register(
   CategoryScale,
@@ -85,11 +86,10 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Skeleton />;
 
   return (
     <div className="p-3">
-      {/* Welcome Section */}
       <div className="mb-8 p-6 bg-white rounded-md shadow-md">
         <h2 className="text-2xl font-semibold text-blue-600">
           Selamat datang kembali, Admin!
@@ -99,7 +99,6 @@ const Dashboard = () => {
         </p>
       </div>
 
-      {/* Statistik Singkat */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="bg-white p-6 rounded-md shadow-md text-center">
           <h3 className="text-lg font-semibold text-gray-600">
@@ -117,7 +116,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Bagian Grafik Penjualan */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <ChartPenjualan />
         <ChartServis />
