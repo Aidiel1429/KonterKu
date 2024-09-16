@@ -1,8 +1,10 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { ReactHTML, useEffect, useRef, useState } from "react";
 import { RiCloseLargeLine } from "react-icons/ri";
 import { MdOutlinePayments } from "react-icons/md";
 import { useRouter } from "next/navigation";
+import PrintBayar from "../printBayar";
+import ReactToPrint from "react-to-print";
 
 interface BayarProps {
   id: number;
@@ -38,6 +40,10 @@ const SelesaiBayar = ({
   const [etanggal, setTanggal] = useState(tanggal);
   const [edeskripsi, setDeskripsi] = useState(deskripsi);
   const [harga, setHarga] = useState<number | string>(0);
+
+  const componentRef = useRef<HTMLDivElement>(null);
+  const [dataPrint, setDataPrint] = useState<any>({});
+  const [showPrintButton, setShowPrintButton] = useState(false);
 
   const handleOpen = () => {
     if (status === "Selesai Servis") {
@@ -106,13 +112,23 @@ const SelesaiBayar = ({
         },
       });
 
-      if (res.data.pesan == "sukses") {
-        await handlePembayaran();
-      } else if (res.data.pesan == "gagal") {
+      if (res.data.pesan === "sukses") {
+        setShowPrintButton(true);
+        setDataPrint({
+          kodeServis: ekodeServis,
+          namaBarang: enamaBarang,
+          nama: enama,
+          tanggal: etanggal,
+          deskripsi: edeskripsi,
+          harga: String(harga),
+          jumlahDibayar: String(jumlahDibayar),
+          kembalian: String(kembalian),
+        });
+      } else if (res.data.pesan === "gagal") {
         setShowError(true);
       }
     } catch (error) {
-      console.log("Terjadi Kesalahan : ", error);
+      console.log("Terjadi Kesalahan: ", error);
     }
   };
 
@@ -151,6 +167,15 @@ const SelesaiBayar = ({
   ) {
     buttonColor = "bg-gray-400 cursor-pointer disabled";
   }
+
+  const handleAfterPrint = () => {
+    if (componentRef.current) {
+      setTimeout(() => {
+        setShowPrintButton(false);
+        handlePembayaran();
+      }, 1000);
+    }
+  };
 
   return (
     <div>
@@ -273,13 +298,38 @@ const SelesaiBayar = ({
             </div>
 
             <div className="modal-action">
-              <button
-                className="btn btn-primary text-white"
-                onClick={handleTambah}
-                disabled={jumlahDibayar < grandTotal}
-              >
-                Tambah
-              </button>
+              {!showPrintButton ? (
+                <div>
+                  <button
+                    className="btn btn-ghost"
+                    type="button"
+                    onClick={handleOpen}
+                  >
+                    Batal
+                  </button>
+                  <button
+                    className="btn btn-primary text-white"
+                    type="submit"
+                    onClick={handleTambah}
+                    disabled={jumlahDibayar < grandTotal}
+                  >
+                    Tambah
+                  </button>
+                </div>
+              ) : (
+                <ReactToPrint
+                  trigger={() => (
+                    <button
+                      className="btn btn-warning text-white mt-4"
+                      type="button"
+                    >
+                      Print
+                    </button>
+                  )}
+                  content={() => componentRef.current}
+                  onAfterPrint={handleAfterPrint}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -287,6 +337,11 @@ const SelesaiBayar = ({
           <button>close</button>
         </form>
       </dialog>
+      <div style={{ display: "none" }}>
+        <div ref={componentRef}>
+          <PrintBayar data={dataPrint} formatRupiah={formatCurrency} />
+        </div>
+      </div>
       {showAlert && (
         <div className="toast toast-end">
           <div className="alert alert-success flex gap-5 items-center text-white">
