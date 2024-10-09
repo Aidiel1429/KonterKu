@@ -1,4 +1,5 @@
 "use client";
+import Skeleton from "@/app/components/skeleton";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
@@ -114,6 +115,8 @@ const Penjualan = () => {
   const handleCloseAlert = () => {
     setShowAlert(false);
   };
+
+  if (loading) return <Skeleton />
 
   return (
     <>

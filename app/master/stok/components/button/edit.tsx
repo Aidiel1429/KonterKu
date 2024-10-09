@@ -37,7 +37,15 @@ const EditStok = ({
   const [ehargaModal, setHargaModal] = useState(hargaModal);
   const [ehargaJual, setHargaJual] = useState(hargaJual);
   const [showAlert, setShowAlert] = useState(false);
-  const [showErorr, setShowErorr] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({
+    kodeBarang: "",
+    nama: "",
+    stok: "",
+    merek: "",
+    hargaModal: "",
+    hargaJual: "",
+  });
 
   useEffect(() => {
     handleListKategori();
@@ -53,25 +61,73 @@ const EditStok = ({
     }
   };
 
+  const validateForm = () => {
+    const errors = {
+      kodeBarang: "",
+      nama: "",
+      stok: "",
+      merek: "",
+      hargaModal: "",
+      hargaJual: "",
+    };
+    let isValid = true;
+
+    if (!ekodeBarang) {
+      errors.kodeBarang = "Kode Barang harus diisi";
+      isValid = false;
+    }
+    if (!enama) {
+      errors.nama = "Nama Barang harus diisi";
+      isValid = false;
+    }
+    if (estok <= 0) {
+      errors.stok = "Stok harus lebih besar dari 0";
+      isValid = false;
+    }
+    if (!emerek) {
+      errors.merek = "Merek Barang harus diisi";
+      isValid = false;
+    }
+    if (ehargaModal <= 0) {
+      errors.hargaModal = "Harga Modal harus lebih besar dari 0";
+      isValid = false;
+    }
+    if (ehargaJual <= 0) {
+      errors.hargaJual = "Harga Jual harus lebih besar dari 0";
+      isValid = false;
+    }
+
+    setValidationErrors(errors);
+    return isValid;
+  };
+
   const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const res = await axios.put(`/api/stok/${id}`, {
-      kodeBarang: ekodeBarang || kodeBarang,
-      nama: enama || nama,
-      stok: estok || stok,
-      merek: emerek || merek,
-      kategoriId: ekategoriId || kategoriId,
-      hargaModal: ehargaModal || hargaModal,
-      hargaJual: ehargaJual || hargaJual,
-    });
+    if (!validateForm()) return; // Stop if validation fails
 
-    if (res.data.pesan == "sukses") {
-      setShowAlert(true);
-      setOpen(false);
-      loadStok();
-    } else if (res.data.pesan == "gagal") {
-      setShowErorr(true);
+    try {
+      const res = await axios.put(`/api/stok/${id}`, {
+        kodeBarang: ekodeBarang || kodeBarang,
+        nama: enama || nama,
+        stok: estok || stok,
+        merek: emerek || merek,
+        kategoriId: ekategoriId || kategoriId,
+        hargaModal: ehargaModal || hargaModal,
+        hargaJual: ehargaJual || hargaJual,
+      });
+
+      if (res.data.pesan === "sukses") {
+        setShowAlert(true);
+        setOpen(false);
+        loadStok();
+      } else if (res.data.pesan === "gagal") {
+        setShowError(true);
+        setOpen(false);
+        loadStok();
+      }
+    } catch (error) {
+      setShowError(true);
       setOpen(false);
       loadStok();
     }
@@ -85,8 +141,8 @@ const EditStok = ({
     setShowAlert(false);
   };
 
-  const handleCloseErorr = () => {
-    setShowErorr(false);
+  const handleCloseError = () => {
+    setShowError(false);
   };
 
   return (
@@ -113,6 +169,11 @@ const EditStok = ({
                 value={ekodeBarang}
                 onChange={(e) => setKodeBarang(e.target.value)}
               />
+              {validationErrors.kodeBarang && (
+                <p className="text-red-500 text-xs">
+                  {validationErrors.kodeBarang}
+                </p>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="nama" className="label">
@@ -126,6 +187,9 @@ const EditStok = ({
                 value={enama}
                 onChange={(e) => setNama(e.target.value)}
               />
+              {validationErrors.nama && (
+                <p className="text-red-500 text-xs">{validationErrors.nama}</p>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="stok" className="label">
@@ -135,11 +199,13 @@ const EditStok = ({
                 type="text"
                 className="input input-bordered w-full font-semibold"
                 placeholder="Masukkan Stok Barang"
-                datatype="number"
                 id="stok"
                 value={estok}
                 onChange={(e) => setStok(+e.target.value)}
               />
+              {validationErrors.stok && (
+                <p className="text-red-500 text-xs">{validationErrors.stok}</p>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="merek" className="label">
@@ -153,6 +219,9 @@ const EditStok = ({
                 value={emerek}
                 onChange={(e) => setMerek(e.target.value)}
               />
+              {validationErrors.merek && (
+                <p className="text-red-500 text-xs">{validationErrors.merek}</p>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="kategori" className="label">
@@ -188,6 +257,11 @@ const EditStok = ({
                   onChange={(e) => setHargaModal(+e.target.value)}
                 />
               </label>
+              {validationErrors.hargaModal && (
+                <p className="text-red-500 text-xs">
+                  {validationErrors.hargaModal}
+                </p>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="hargaJual" className="label">
@@ -203,50 +277,53 @@ const EditStok = ({
                   onChange={(e) => setHargaJual(+e.target.value)}
                 />
               </label>
+              {validationErrors.hargaJual && (
+                <p className="text-red-500 text-xs">
+                  {validationErrors.hargaJual}
+                </p>
+              )}
             </div>
             <div className="modal-action">
               <button
-                className="btn btn-ghost"
                 type="button"
-                onClick={handleOpen}
+                className="btn"
+                onClick={() => setOpen(false)}
               >
                 Tutup
               </button>
-              <button className="btn btn-warning text-white" type="submit">
-                Edit
+              <button type="submit" className="btn btn-primary">
+                Simpan
               </button>
             </div>
           </form>
         </div>
-        <form method="dialog" className="modal-backdrop" onClick={handleOpen}>
-          <button>close</button>
-        </form>
       </dialog>
+
       {showAlert && (
-        <div className="toast toast-end">
-          <div className="alert alert-success flex gap-5 items-center text-white">
+        <div className="alert alert-success shadow-lg">
+          <div>
             <span>Data Berhasil Diedit!</span>
-            <span
-              className="p-2 hover:bg-white/30 cursor-pointer rounded-md transition-all"
-              onClick={handleCloseAlert}
-            >
-              <RiCloseLargeLine />
-            </span>
           </div>
+          <button
+            onClick={handleCloseAlert}
+            className="btn btn-sm btn-circle btn-ghost"
+          >
+            ✕
+          </button>
         </div>
       )}
-      {showErorr && (
-        <dialog id="my_modal_2" className="modal-open">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">Error!</h3>
-            <p className="py-4">Gagal Mengedit Data!</p>
-            <div className="modal-action">
-              <button onClick={handleCloseErorr} className="btn btn-ghost">
-                Tutup
-              </button>
-            </div>
+      {showError && (
+        <div className="alert alert-error shadow-lg">
+          <div>
+            <span>Data Gagal Diedit!</span>
           </div>
-        </dialog>
+          <button
+            onClick={handleCloseError}
+            className="btn btn-sm btn-circle btn-ghost"
+          >
+            ✕
+          </button>
+        </div>
       )}
     </>
   );

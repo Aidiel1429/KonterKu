@@ -5,47 +5,46 @@ import { RiCloseLargeLine } from "react-icons/ri";
 
 interface EditJenisProps {
   id: number;
-  loadJenis: Function;
+  loadJenis: () => void;
   nama: string;
 }
 
 const EditJenis = ({ id, loadJenis, nama }: EditJenisProps) => {
   const [open, setOpen] = useState(false);
   const [eNama, setNama] = useState(nama);
-  const [showAlert, setShowAlert] = useState(false);
-  const [showErorr, setShowErorr] = useState(false);
+  const [alert, setAlert] = useState<{ type: string; message: string } | null>(
+    null
+  );
+  const [error, setError] = useState<string | null>(null);
 
   const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const response = await axios.put(`/api/jenis/${id}`, {
-        nama: eNama || nama,
-      });
 
-      if (response.data.pesan == "sukses") {
-        setShowAlert(true);
-        setOpen(false);
-        loadJenis();
-      } else if (response.data.pesan == "gagal") {
-        setShowErorr(true);
-        loadJenis();
-      }
-    } catch (error) {
-      console.log("Terjadi Kesalahan : ", error);
+    // Form validation
+    if (!eNama.trim()) {
+      setError("Nama kategori tidak boleh kosong.");
+      return;
     }
+
+    try {
+      const response = await axios.put(`/api/jenis/${id}`, { nama: eNama });
+      const message =
+        response.data.pesan === "sukses"
+          ? "Data Berhasil Diedit!"
+          : "Gagal Edit Data!";
+      setAlert({ type: response.data.pesan, message });
+      loadJenis();
+    } catch (error) {
+      console.error("Terjadi Kesalahan:", error);
+      setAlert({ type: "gagal", message: "Gagal Edit Data!" });
+    }
+    setOpen(false);
   };
 
-  const handleModal = () => {
-    setOpen(!open);
-  };
+  const handleModal = () => setOpen(!open);
+  const handleCloseAlert = () => setAlert(null);
+  const handleCloseError = () => setError(null);
 
-  const handleCloseAlert = () => {
-    setShowAlert(false);
-  };
-
-  const handleCloseErorr = () => {
-    setShowErorr(false);
-  };
   return (
     <div>
       <button
@@ -54,7 +53,7 @@ const EditJenis = ({ id, loadJenis, nama }: EditJenisProps) => {
       >
         <CiEdit />
       </button>
-      <dialog id="my_modal_2" className={open ? "modal modal-open" : "modal"}>
+      <dialog className={open ? "modal modal-open" : "modal"}>
         <div className="modal-box">
           <h3 className="font-bold text-lg">Edit Kategori</h3>
           <form className="font-semibold" onSubmit={handleEdit}>
@@ -68,8 +67,13 @@ const EditJenis = ({ id, loadJenis, nama }: EditJenisProps) => {
                 placeholder="Masukkan Nama Kategori"
                 id="nama"
                 value={eNama}
-                onChange={(e) => setNama(e.target.value)}
+                onChange={(e) => {
+                  setNama(e.target.value);
+                  if (error) setError(null); // Clear error when user starts typing
+                }}
               />
+              {error && <p className="text-red-500 text-sm">{error}</p>}{" "}
+              {/* Error message */}
             </div>
             <div className="modal-action">
               <button
@@ -89,10 +93,14 @@ const EditJenis = ({ id, loadJenis, nama }: EditJenisProps) => {
           <button onClick={handleModal}>close</button>
         </form>
       </dialog>
-      {showAlert && (
+      {alert && (
         <div className="toast toast-end">
-          <div className="alert alert-success flex gap-5 items-center text-white">
-            <span>Data Berhasil Diedit!</span>
+          <div
+            className={`alert ${
+              alert.type === "sukses" ? "alert-success" : "alert-error"
+            } flex gap-5 items-center text-white`}
+          >
+            <span>{alert.message}</span>
             <span
               className="p-2 hover:bg-white/30 cursor-pointer rounded-md transition-all"
               onClick={handleCloseAlert}
@@ -101,22 +109,6 @@ const EditJenis = ({ id, loadJenis, nama }: EditJenisProps) => {
             </span>
           </div>
         </div>
-      )}
-      {showErorr && (
-        <dialog id="my_modal_2" className="modal-open">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">Error!</h3>
-            <p className="py-4">Gagal Edit Data!</p>
-            <div className="modal-action">
-              <button onClick={handleCloseErorr} className="btn btn-ghost">
-                Tutup
-              </button>
-            </div>
-          </div>
-          <form method="dialog" className="modal-backdrop">
-            <button onClick={handleCloseErorr}>close</button>
-          </form>
-        </dialog>
       )}
     </div>
   );

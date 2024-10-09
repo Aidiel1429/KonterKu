@@ -7,6 +7,7 @@ import TambahStok from "./components/button/tambah";
 import HapusStok from "./components/button/hapus";
 import { RiCloseLargeLine } from "react-icons/ri";
 import EditStok from "./components/button/edit";
+import Skeleton from "@/app/components/skeleton";
 
 const Stok = () => {
   const [stok, setStok] = useState([]);
@@ -146,6 +147,8 @@ const Stok = () => {
       ),
     },
   ];
+
+  if (loading) return <Skeleton />
 
   return (
     <>

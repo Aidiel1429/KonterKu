@@ -13,21 +13,30 @@ const EditKategori = ({ id, loadKategori, nama }: EditKategoriProps) => {
   const [open, setOpen] = useState(false);
   const [eNama, setNama] = useState(nama);
   const [showAlert, setShowAlert] = useState(false);
-  const [showErorr, setShowErorr] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Validation check
+    if (eNama.trim() === "") {
+      setErrorMessage("Nama kategori tidak boleh kosong!");
+      setShowError(true);
+      return;
+    }
+
     try {
       const response = await axios.put(`/api/kategori/${id}`, {
         nama: eNama || nama,
       });
 
-      if (response.data.pesan == "sukses") {
+      if (response.data.pesan === "sukses") {
         setShowAlert(true);
         setOpen(false);
         loadKategori();
-      } else if (response.data.pesan == "gagal") {
-        setShowErorr(true);
+      } else if (response.data.pesan === "gagal") {
+        setShowError(true);
         loadKategori();
       }
     } catch (error) {
@@ -43,9 +52,10 @@ const EditKategori = ({ id, loadKategori, nama }: EditKategoriProps) => {
     setShowAlert(false);
   };
 
-  const handleCloseErorr = () => {
-    setShowErorr(false);
+  const handleCloseError = () => {
+    setShowError(false);
   };
+
   return (
     <div>
       <button
@@ -70,6 +80,8 @@ const EditKategori = ({ id, loadKategori, nama }: EditKategoriProps) => {
                 value={eNama}
                 onChange={(e) => setNama(e.target.value)}
               />
+              {showError && <p className="text-red-500">{errorMessage}</p>}{" "}
+              {/* Display error message */}
             </div>
             <div className="modal-action">
               <button
@@ -102,19 +114,19 @@ const EditKategori = ({ id, loadKategori, nama }: EditKategoriProps) => {
           </div>
         </div>
       )}
-      {showErorr && (
+      {showError && (
         <dialog id="my_modal_2" className="modal-open">
           <div className="modal-box">
             <h3 className="font-bold text-lg">Error!</h3>
             <p className="py-4">Gagal Edit Data!</p>
             <div className="modal-action">
-              <button onClick={handleCloseErorr} className="btn btn-ghost">
+              <button onClick={handleCloseError} className="btn btn-ghost">
                 Tutup
               </button>
             </div>
           </div>
           <form method="dialog" className="modal-backdrop">
-            <button onClick={handleCloseErorr}>close</button>
+            <button onClick={handleCloseError}>close</button>
           </form>
         </dialog>
       )}

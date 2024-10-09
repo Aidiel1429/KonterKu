@@ -18,7 +18,16 @@ const TambahStok = ({ loadStok }: { loadStok: Function }) => {
   const [hargaModal, setHargaModal] = useState("");
   const [hargaJual, setHargaJual] = useState("");
   const [showAlert, setShowAlert] = useState(false);
-  const [showErorr, setShowErorr] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({
+    kodeBarang: "",
+    nama: "",
+    stok: "",
+    merek: "",
+    kategoriId: "",
+    hargaModal: "",
+    hargaJual: "",
+  });
 
   useEffect(() => {
     handleListKategori();
@@ -34,8 +43,68 @@ const TambahStok = ({ loadStok }: { loadStok: Function }) => {
     }
   };
 
+  const validateForm = () => {
+    let errors = {
+      kodeBarang: "",
+      nama: "",
+      stok: "",
+      merek: "",
+      kategoriId: "",
+      hargaModal: "",
+      hargaJual: "",
+    };
+    let isValid = true;
+
+    if (!kodeBarang) {
+      errors.kodeBarang = "Kode Barang harus diisi.";
+      isValid = false;
+    }
+    if (!nama) {
+      errors.nama = "Nama Barang harus diisi.";
+      isValid = false;
+    }
+    if (!stok) {
+      errors.stok = "Stok Barang harus diisi.";
+      isValid = false;
+    } else if (isNaN(Number(stok))) {
+      errors.stok = "Stok harus berupa angka.";
+      isValid = false;
+    }
+    if (!merek) {
+      errors.merek = "Merek Barang harus diisi.";
+      isValid = false;
+    }
+    if (!kategoriId) {
+      errors.kategoriId = "Kategori harus dipilih.";
+      isValid = false;
+    }
+    if (!hargaModal) {
+      errors.hargaModal = "Harga Modal harus diisi.";
+      isValid = false;
+    } else if (isNaN(Number(hargaModal))) {
+      errors.hargaModal = "Harga Modal harus berupa angka.";
+      isValid = false;
+    }
+    if (!hargaJual) {
+      errors.hargaJual = "Harga Jual harus diisi.";
+      isValid = false;
+    } else if (isNaN(Number(hargaJual))) {
+      errors.hargaJual = "Harga Jual harus berupa angka.";
+      isValid = false;
+    }
+
+    setValidationErrors(errors);
+    return isValid;
+  };
+
   const handleTambah = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Validate the form before proceeding
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("kodeBarang", kodeBarang);
@@ -52,7 +121,7 @@ const TambahStok = ({ loadStok }: { loadStok: Function }) => {
         },
       });
 
-      if (response.data.pesan == "sukses") {
+      if (response.data.pesan === "sukses") {
         setShowAlert(true);
         setOpen(false);
         loadStok();
@@ -63,8 +132,8 @@ const TambahStok = ({ loadStok }: { loadStok: Function }) => {
         setKategoriId("");
         setHargaModal("");
         setHargaJual("");
-      } else if (response.data.pesan == "gagal") {
-        setShowErorr(true);
+      } else if (response.data.pesan === "gagal") {
+        setShowError(true);
         loadStok();
       }
     } catch (error) {
@@ -81,7 +150,7 @@ const TambahStok = ({ loadStok }: { loadStok: Function }) => {
   };
 
   const handleCloseErorr = () => {
-    setShowErorr(false);
+    setShowError(false);
   };
 
   return (
@@ -105,6 +174,11 @@ const TambahStok = ({ loadStok }: { loadStok: Function }) => {
                 value={kodeBarang}
                 onChange={(e) => setKodeBarang(e.target.value)}
               />
+              {validationErrors.kodeBarang && (
+                <p className="text-red-500 text-xs">
+                  {validationErrors.kodeBarang}
+                </p>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="nama" className="label">
@@ -118,6 +192,9 @@ const TambahStok = ({ loadStok }: { loadStok: Function }) => {
                 value={nama}
                 onChange={(e) => setNama(e.target.value)}
               />
+              {validationErrors.nama && (
+                <p className="text-red-500 text-xs">{validationErrors.nama}</p>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="stok" className="label">
@@ -127,11 +204,13 @@ const TambahStok = ({ loadStok }: { loadStok: Function }) => {
                 type="text"
                 className="input input-bordered w-full font-semibold"
                 placeholder="Masukkan Stok Barang"
-                datatype="number"
                 id="stok"
                 value={stok}
                 onChange={(e) => setStok(e.target.value)}
               />
+              {validationErrors.stok && (
+                <p className="text-red-500 text-xs">{validationErrors.stok}</p>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="merek" className="label">
@@ -145,6 +224,9 @@ const TambahStok = ({ loadStok }: { loadStok: Function }) => {
                 value={merek}
                 onChange={(e) => setMerek(e.target.value)}
               />
+              {validationErrors.merek && (
+                <p className="text-red-500 text-xs">{validationErrors.merek}</p>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="kategori" className="label">
@@ -156,7 +238,7 @@ const TambahStok = ({ loadStok }: { loadStok: Function }) => {
                 value={kategoriId}
                 onChange={(e) => setKategoriId(e.target.value)}
               >
-                <option disabled selected value={""}>
+                <option disabled selected value="">
                   Pilih Kategori
                 </option>
                 {listKategori.map((item: any) => (
@@ -165,6 +247,11 @@ const TambahStok = ({ loadStok }: { loadStok: Function }) => {
                   </option>
                 ))}
               </select>
+              {validationErrors.kategoriId && (
+                <p className="text-red-500 text-xs">
+                  {validationErrors.kategoriId}
+                </p>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="modal" className="label">
@@ -180,6 +267,11 @@ const TambahStok = ({ loadStok }: { loadStok: Function }) => {
                   onChange={(e) => setHargaModal(e.target.value)}
                 />
               </label>
+              {validationErrors.hargaModal && (
+                <p className="text-red-500 text-xs">
+                  {validationErrors.hargaModal}
+                </p>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="hargaJual" className="label">
@@ -195,24 +287,26 @@ const TambahStok = ({ loadStok }: { loadStok: Function }) => {
                   onChange={(e) => setHargaJual(e.target.value)}
                 />
               </label>
+              {validationErrors.hargaJual && (
+                <p className="text-red-500 text-xs">
+                  {validationErrors.hargaJual}
+                </p>
+              )}
             </div>
             <div className="modal-action">
               <button
-                className="btn btn-ghost"
                 type="button"
-                onClick={handleOpen}
+                className="btn"
+                onClick={() => setOpen(false)}
               >
                 Tutup
               </button>
-              <button className="btn btn-primary text-white" type="submit">
+              <button type="submit" className="btn btn-primary text-white">
                 Tambah
               </button>
             </div>
           </form>
         </div>
-        <form method="dialog" className="modal-backdrop" onClick={handleOpen}>
-          <button>close</button>
-        </form>
       </dialog>
       {showAlert && (
         <div className="toast toast-end">
@@ -227,18 +321,18 @@ const TambahStok = ({ loadStok }: { loadStok: Function }) => {
           </div>
         </div>
       )}
-      {showErorr && (
-        <dialog id="my_modal_2" className="modal-open">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">Error!</h3>
-            <p className="py-4">Gagal Menambahkan Data!</p>
-            <div className="modal-action">
-              <button onClick={handleCloseErorr} className="btn btn-ghost">
-                Tutup
-              </button>
-            </div>
+      {showError && (
+        <div className="toast toast-end">
+          <div className="alert alert-erorr flex gap-5 items-center text-white">
+            <span>Terjadi kesalahan saat menambahkan data!</span>
+            <span
+              className="p-2 hover:bg-white/30 cursor-pointer rounded-md transition-all"
+              onClick={handleCloseErorr}
+            >
+              <RiCloseLargeLine />
+            </span>
           </div>
-        </dialog>
+        </div>
       )}
     </>
   );

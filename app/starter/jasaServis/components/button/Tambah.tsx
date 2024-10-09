@@ -4,7 +4,6 @@ import React, { ReactHTML, useEffect, useRef, useState } from "react";
 import { RiCloseLargeLine } from "react-icons/ri";
 import ComponentPrint from "../componentPrint";
 import ReactToPrint from "react-to-print";
-import { useRouter } from "next/navigation";
 
 const generateRandomCode = () => {
   const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -48,6 +47,17 @@ const Tambah = ({ loadServis }: { loadServis: Function }) => {
   const [jenisNama, setJenisNama] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [errors, setErrors] = useState({
+    kodeServis: "",
+    nama: "",
+    nomorSeri: "",
+    namaBarang: "",
+    tanggal: "",
+    nope: "",
+    jenisId: "",
+    deskripsi: "",
+  });
+
   useEffect(() => {
     setKodeServis(generateRandomCode());
     loadJenis();
@@ -66,6 +76,77 @@ const Tambah = ({ loadServis }: { loadServis: Function }) => {
   const TambahServis = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isSubmitting) return; // Prevent duplicate submission
+
+    // Reset errors
+    setErrors({
+      kodeServis: "",
+      nama: "",
+      nomorSeri: "",
+      namaBarang: "",
+      tanggal: "",
+      nope: "",
+      jenisId: "",
+      deskripsi: "",
+    });
+
+    let hasError = false;
+
+    // Validasi Form
+    if (!kodeServis) {
+      setErrors((prev) => ({
+        ...prev,
+        kodeServis: "Kode Servis tidak boleh kosong!",
+      }));
+      hasError = true;
+    }
+    if (!nama) {
+      setErrors((prev) => ({ ...prev, nama: "Nama tidak boleh kosong!" }));
+      hasError = true;
+    }
+    if (!nomorSeri) {
+      setErrors((prev) => ({
+        ...prev,
+        nomorSeri: "Nomor Seri tidak boleh kosong!",
+      }));
+      hasError = true;
+    }
+    if (!namaBarang) {
+      setErrors((prev) => ({
+        ...prev,
+        namaBarang: "Nama Barang tidak boleh kosong!",
+      }));
+      hasError = true;
+    }
+    if (!deskripsi) {
+      setErrors((prev) => ({
+        ...prev,
+        deskripsi: "Nama Barang tidak boleh kosong!",
+      }));
+      hasError = true;
+    }
+    if (!tanggal) {
+      setErrors((prev) => ({ ...prev, tanggal: "Tanggal harus dipilih!" }));
+      hasError = true;
+    }
+    if (!nope) {
+      setErrors((prev) => ({ ...prev, nope: "Nomor HP tidak boleh kosong!" }));
+      hasError = true;
+    } else if (nope.length < 10) {
+      setErrors((prev) => ({
+        ...prev,
+        nope: "Nomor HP harus terdiri dari minimal 10 digit!",
+      }));
+      hasError = true;
+    }
+    if (!jenisId) {
+      setErrors((prev) => ({
+        ...prev,
+        jenisId: "Jenis Servis harus dipilih!",
+      }));
+      hasError = true;
+    }
+
+    if (hasError) return; // Batalkan pengiriman jika ada field yang kosong
 
     setIsSubmitting(true);
     try {
@@ -166,6 +247,9 @@ const Tambah = ({ loadServis }: { loadServis: Function }) => {
                     onChange={(e) => setKodeServis(e.target.value)}
                     readOnly
                   />
+                  {errors.kodeServis && (
+                    <p className="text-red-500 text-sm">{errors.kodeServis}</p>
+                  )}
                 </div>
                 <div className="mb-3">
                   <label htmlFor="namaBarang" className="label">
@@ -191,6 +275,9 @@ const Tambah = ({ loadServis }: { loadServis: Function }) => {
                       readOnly
                     />
                   )}
+                  {errors.namaBarang && (
+                    <p className="text-red-500 text-sm">{errors.namaBarang}</p>
+                  )}
                 </div>
                 <div className="mb-3">
                   <label htmlFor="nomorSeri" className="label">
@@ -215,6 +302,9 @@ const Tambah = ({ loadServis }: { loadServis: Function }) => {
                       onChange={(e) => setNomorSeri(e.target.value)}
                       readOnly
                     />
+                  )}
+                  {errors.nomorSeri && (
+                    <p className="text-red-500 text-sm">{errors.nomorSeri}</p>
                   )}
                 </div>
               </div>
@@ -243,6 +333,9 @@ const Tambah = ({ loadServis }: { loadServis: Function }) => {
                       readOnly
                     />
                   )}
+                  {errors.nama && (
+                    <p className="text-red-500 text-sm">{errors.nama}</p>
+                  )}
                 </div>
                 <div className="mb-3">
                   <label htmlFor="nope" className="label">
@@ -267,6 +360,9 @@ const Tambah = ({ loadServis }: { loadServis: Function }) => {
                       onChange={(e) => setNope(e.target.value)}
                       readOnly
                     />
+                  )}
+                  {errors.nope && (
+                    <p className="text-red-500 text-sm">{errors.nope}</p>
                   )}
                 </div>
                 <div className="mb-3">
@@ -307,6 +403,9 @@ const Tambah = ({ loadServis }: { loadServis: Function }) => {
                       ))}
                     </select>
                   )}
+                  {errors.jenisId && (
+                    <p className="text-red-500 text-sm">{errors.jenisId}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -332,6 +431,9 @@ const Tambah = ({ loadServis }: { loadServis: Function }) => {
                   readOnly
                 />
               )}
+              {errors.tanggal && (
+                <p className="text-red-500 text-sm">{errors.tanggal}</p>
+              )}
             </div>
             <div className="mt-3">
               <label htmlFor="deskripsi" className="label">
@@ -354,6 +456,9 @@ const Tambah = ({ loadServis }: { loadServis: Function }) => {
                   onChange={(e) => setDeskripsi(e.target.value)}
                   readOnly
                 ></textarea>
+              )}
+              {errors.deskripsi && (
+                <p className="text-red-500 text-sm">{errors.deskripsi}</p>
               )}
             </div>
             <div className="modal-action">

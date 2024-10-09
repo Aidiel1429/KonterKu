@@ -48,7 +48,20 @@ const Penjualan = () => {
 
   // Menambah barang ke daftar barang terpilih
   const handleSelectItem = (item: any) => {
-    setBarangTerpilih([...barangTerpilih, { ...item, qty: 1 }]);
+    // Cek apakah barang sudah ada dalam daftar
+    const existingItemIndex = barangTerpilih.findIndex(
+      (barang) => barang.kodeBarang === item.kodeBarang
+    );
+
+    if (existingItemIndex >= 0) {
+      // Jika sudah ada, tingkatkan qty
+      const updatedBarang = [...barangTerpilih];
+      updatedBarang[existingItemIndex].qty += 1; // Tambah qty
+      setBarangTerpilih(updatedBarang);
+    } else {
+      // Jika belum ada, tambahkan barang baru
+      setBarangTerpilih([...barangTerpilih, { ...item, qty: 1 }]);
+    }
   };
 
   // Menghapus barang dari daftar
@@ -135,7 +148,6 @@ const Penjualan = () => {
         <div className="flex justify-end w-full">
           <Search onSelectItem={handleSelectItem} />
         </div>
-
         <div className="overflow-x-auto mt-5">
           <table className="table">
             <thead>
@@ -220,7 +232,6 @@ const Penjualan = () => {
             </tbody>
           </table>
         </div>
-
         {/* Grand Total */}
         <div className="py-12 flex justify-between items-center font-bold lg:text-2xl">
           <div className="text-end mr-20 text-sm lg:text-lg lg:w-9/12">
@@ -236,7 +247,6 @@ const Penjualan = () => {
           </div>
         </div>
 
-        {/* Payment Section */}
         <div className="py-4">
           <label className="block text-base font-bold">
             Jumlah Uang Dibayar
@@ -246,9 +256,18 @@ const Penjualan = () => {
             <input
               type="text"
               className="grow"
-              value={jumlahDibayar}
-              onChange={(e) => setJumlahDibayar(parseFloat(e.target.value))}
-              placeholder="Masukkan Jumlah Dibayar"
+              value={jumlahDibayar === 0 ? "" : jumlahDibayar} // Set ke string kosong jika 0
+              onChange={(e) => {
+                const value = e.target.value;
+
+                // Cek apakah input kosong
+                if (value === "") {
+                  setJumlahDibayar(0); // Set to 0 if input is empty
+                } else {
+                  setJumlahDibayar(parseFloat(value) || 0); // Atur ke nilai yang valid
+                }
+              }}
+              placeholder="Masukkan Jumlah Dibayar" // Placeholder ditambahkan
             />
           </label>
           <label className="block text-base font-bold mt-2">Kembalian</label>
@@ -264,7 +283,6 @@ const Penjualan = () => {
             readOnly
           />
         </div>
-
         <div className="modal-action gap-2">
           {!showPrintButton ? (
             <button
